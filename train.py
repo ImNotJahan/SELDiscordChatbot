@@ -6,5 +6,9 @@ bot = ChatBot('Lain')
 bot.set_trainer(ChatterBotCorpusTrainer)
     
 bot.train(
-    "corpus.main"
+    "corpus.conversations",
+    "corpus.personal",
+    "corpus.greetings",
+    "corpus.psyche",
+    "corpus.custom"
 )

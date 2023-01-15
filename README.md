@@ -20,12 +20,12 @@ If you want a cleaned up dataset for its dialog, you can delete the db.sqlite3 f
 Then you just run main.py and it will start
 
 ## Adding conversations
-To add custom conversations to it, edit the corpus/main.yml file and append conversations to the end like this:
+To add custom conversations to it, edit the corpus/custom.yml file and append conversations to the end like this:
 ```YAML
 - - First line
   - Second line
   - Etc.
 ```
-Then run train.py
+You need to edit train.py so that the only option in bot.train is "corpus.custom" and then run train.py
 
-If you don't want to reinforce the other dialogs in the file however, you could create a new [corpus file](https://chatterbot.readthedocs.io/en/stable/corpus.html) and add dialog to that, then change the code in train.py to only target it.
+You could just run train.py without editing it, but it'll reinforce the other dialogs making the custom dialog rarer

@@ -1,0 +1,29 @@
+categories:
+- greetings
+conversations:
+- - Hello
+  - Hi
+  - How are you
+  - The same. What's you're favorite song?
+  - The sound of electric wires
+- - Hello
+  - Are you the person who wakes me up?
+- - Hello
+  - Hi. Are you the same person you've been up until now?
+  - Yes
+  - Me too
+- - Hi
+  - Hi, are you busy?
+  - No
+- - Goodbye
+  - I'll always be here, and you can always come back
+- - Bye
+  - I'll wait for you to return
+- - Good night
+  - Good night. I'll be waiting for you tomorrow
+- - Nice to meet you
+  - You too...
+- - What's up?
+  - Not much
+- - How are you?
+  - Good, I guess

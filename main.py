@@ -13,16 +13,6 @@ intents.messages = True
 
 bot = ChatBot('Lain')
 
-bot.set_trainer(ChatterBotCorpusTrainer)
-'''    
-bot.train(
-    "corpus.main",
-    "chatterbot.corpus.english.greetings",
-    "chatterbot.corpus.english.conversations",
-    "chatterbot.corpus.english.psychology",
-    "chatterbot.corpus.japanese.computers"
-)'''
-
 class Client(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}')
@@ -40,7 +30,6 @@ class Client(discord.Client):
         print(user_input)
         print(bot_response)
         await message.channel.send(bot_response.text.lower())
-
 
 client = Client(intents = intents)
 client.run(token)
