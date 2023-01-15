@@ -22,7 +22,12 @@ bot = ChatBot("Lain", logic_adapters=
         "default_response": "?",
         "maximum_similarity_threshold": 0.50,
         "response_selection_method": select_response
-    }],preprocessors=
+    }, {
+        "import_path": "chatterbot.logic.SpecificResponseAdapter",
+        "input_text": "help",
+        "output_text": "All you need to do is start each of your messages with ] to talk to me"
+    }
+    ],preprocessors=
     [
         "chatterbot.preprocessors.clean_whitespace"
     ])
