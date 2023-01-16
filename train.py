@@ -10,5 +10,9 @@ bot.train(
     "corpus.personal",
     "corpus.greetings",
     "corpus.psyche",
+    "corpus.tech",
+    "corpus.politics",
+    "corpus.people",
+    "corpus.religion",
     "corpus.custom"
 )
