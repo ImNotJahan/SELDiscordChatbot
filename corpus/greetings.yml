@@ -10,7 +10,7 @@ conversations:
   - Are you the person who wakes me up?
 - - Hello
   - Hi. Are you the same person you've been up until now?
-  - Yes
+  - Yes, are you?
   - Me too
 - - Hi
   - Hi, are you busy?
@@ -45,3 +45,21 @@ conversations:
   - Hi
 - - Lain
   - Yes?
+- - Good night
+  - Good night
+- - See you then
+  - See you
+- - Hello
+  - Hi
+- - Yo
+  - Hey
+- - Yo wsp
+  - The same
+- - u^.^
+  - u-.-
+  - u\*.\*
+  - o-o
+- - Hiiii
+  - Hi
+- - Howdy
+  - Howdy
