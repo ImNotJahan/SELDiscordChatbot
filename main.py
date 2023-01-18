@@ -3,8 +3,8 @@ from chatterbot.comparisons import LevenshteinDistance
 
 import discord
 import configparser
-import random
 import re # for input sanitization
+
 
 # Bot token stored in seperate file for .gitignore
 config = configparser.ConfigParser()
@@ -14,10 +14,6 @@ token = config["Settings"]["token"]
 # Allows bot to read messages
 intents = discord.Intents.default()
 intents.messages = True
-
-# This way there can be multiple possible results for a single input
-def select_response(statement, statement_list, storage=None):
-    return random.choice(statement_list)
 
 # Emojis crash ChatBot.get_response function
 def remove_emojis(text):
@@ -29,19 +25,27 @@ def remove_emojis(text):
                            "]+", flags=re.UNICODE)
     return emoji_pattern.sub(r'', text)
 
+def hadBannedWord(text):
+    if(text == "I don't want to talk about this..." or
+       text == "Lalalalalalala" or
+       text == "Be quiet" or
+       text[:4] == "IP: "):
+        return True;
+    return False;
 
 bot = ChatBot("Lain", logic_adapters=
     [{
         "import_path": "chatterbot.logic.BestMatch",
         "default_response": "?",
-        "maximum_similarity_threshold": 0.90,
-        "response_selection_method": select_response
-    }, {
+        "maximum_similarity_threshold": 0.95,
+        "response_selection_method": "chatterbot.response_selection.get_random_response"
+    }, "adapters.HandleBannedWords",
+    {
         "import_path": "chatterbot.logic.SpecificResponseAdapter",
         "input_text": "help",
         "output_text": "All you need to do is start each of your messages with ] to talk to me"
     }
-    ],preprocessors=
+    ], preprocessors=
     [
         "chatterbot.preprocessors.clean_whitespace"
     ])
@@ -51,14 +55,22 @@ bot = ChatBot("Lain", logic_adapters=
 class Client(discord.Client):
     async def on_ready(self):
         print(f"Logged on as {self.user}")
+        print("In " + str(len(self.guilds)) + " servers")
 
     async def on_message(self, message):
         if message.author == client.user: return # No talking to self
         if message.author.bot: return # No talking to bots
         if ((message.content)[:1] != "]"): return # Only responding to commands
-        
+
         user_input = remove_emojis(message.content[1:])
+        
+        # This way sentences with banned words aren't learned
+        bot.read_only = hadBannedWord(user_input)
+        
         bot_response = bot.get_response(user_input).text
+
+        bot.read_only = False
+        
         print(user_input + " : " + bot_response)
         
         await message.channel.send(bot_response.lower())

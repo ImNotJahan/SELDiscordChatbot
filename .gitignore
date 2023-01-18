@@ -1,2 +1,5 @@
 config.ini
 old-db
+__pycache__
+db.sqlite3
+retrain.bat
