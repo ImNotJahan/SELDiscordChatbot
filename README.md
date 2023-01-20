@@ -15,9 +15,8 @@ You need to create a config.ini file too include your discord bot token in, with
 token = <token>
 ```
 
-If you want a cleaned up dataset for its dialog, you can delete the db.sqlite3 file and run the train.py file.
-
-Then you just run main.py and it will start
+Run `train.py` and then run `main.py` and it will start
+Afterwards all you need to start it is run `main.py`
 
 ## Adding conversations
 To add custom conversations to it, edit the corpus/custom.yml file and append conversations to the end like this:
