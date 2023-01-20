@@ -7,7 +7,8 @@ from discord.ext import tasks
 import configparser
 import re # for input sanitization
 
-import handleapi
+import modules.handleapi as handleapi
+#import modules.handlewebhook as handlewebhook
 
 # Bot token stored in seperate file for .gitignore
 config = configparser.ConfigParser()
@@ -43,7 +44,7 @@ bot = ChatBot("Lain", logic_adapters=
         "default_response": "?",
         "maximum_similarity_threshold": 0.95,
         "response_selection_method": "chatterbot.response_selection.get_random_response"
-    }, "adapters.HandleBannedWords",
+    }, "modules.adapters.HandleBannedWords",
     {
         "import_path": "chatterbot.logic.SpecificResponseAdapter",
         "input_text": "help",
@@ -85,4 +86,4 @@ async def updateDiscordBotListStatistics():
     await handleapi.discordBotListAPI(client, dblToken);
 
 client = Client(intents = intents)
-client.run(token)
+#client.run(token)
