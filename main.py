@@ -2,14 +2,18 @@ from chatterbot import ChatBot
 from chatterbot.comparisons import LevenshteinDistance
 
 import discord
+from discord.ext import tasks
+
 import configparser
 import re # for input sanitization
 
+import handleapi
 
 # Bot token stored in seperate file for .gitignore
 config = configparser.ConfigParser()
 config.read("config.ini")
 token = config["Settings"]["token"]
+dblToken = config["Settings"]["dblToken"] # dbl : Discord bot list
 
 # Allows bot to read messages
 intents = discord.Intents.default()
@@ -56,6 +60,7 @@ class Client(discord.Client):
     async def on_ready(self):
         print(f"Logged on as {self.user}")
         print("In " + str(len(self.guilds)) + " servers")
+        await handleapi.discordBotListAPI(self, dblToken);
 
     async def on_message(self, message):
         if message.author == client.user: return # No talking to self
@@ -74,6 +79,10 @@ class Client(discord.Client):
         print(user_input + " : " + bot_response)
         
         await message.channel.send(bot_response.lower())
+
+@tasks.loop(hours=24)
+async def updateDiscordBotListStatistics():
+    await handleapi.discordBotListAPI(client, dblToken);
 
 client = Client(intents = intents)
 client.run(token)
