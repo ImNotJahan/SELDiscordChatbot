@@ -8,13 +8,18 @@ import configparser
 import re # for input sanitization
 
 import modules.handleapi as handleapi
-#import modules.handlewebhook as handlewebhook
+import modules.handlewebhook as handlewebhook
+
+import threading
 
 # Bot token stored in seperate file for .gitignore
 config = configparser.ConfigParser()
 config.read("config.ini")
 token = config["Settings"]["token"]
 dblToken = config["Settings"]["dblToken"] # dbl : Discord bot list
+discordsToken = config["Settings"]["discordsToken"] # discords.com
+
+webhooksEnabled = False
 
 # Allows bot to read messages
 intents = discord.Intents.default()
@@ -62,6 +67,7 @@ class Client(discord.Client):
         print(f"Logged on as {self.user}")
         print("In " + str(len(self.guilds)) + " servers")
         await handleapi.discordBotListAPI(self, dblToken);
+        await handleapi.discordsAPI(client, discordsToken)
 
     async def on_message(self, message):
         if message.author == client.user: return # No talking to self
@@ -81,9 +87,31 @@ class Client(discord.Client):
         
         await message.channel.send(bot_response.lower())
 
-@tasks.loop(hours=24)
+    async def thank_user(self, user):
+        await self.fetch_user(user).send("thank you for supporting me")
+        
+
+# Bot list server count posting
+@tasks.loop(hours=1)
 async def updateDiscordBotListStatistics():
-    await handleapi.discordBotListAPI(client, dblToken);
+    await handleapi.discordBotListAPI(client, dblToken)
+    await handleapi.discordsAPI(client, discordsToken)
+
 
 client = Client(intents = intents)
-#client.run(token)
+webhook = handlewebhook.Webhook(client.thank_user)
+
+def start_client():
+    client.run(token)
+
+def start_webhooks():
+    webhook.run()
+
+if __name__ =="__main__":
+    # creating thread
+    t1 = threading.Thread(target=start_client)
+    t1.start()
+
+    if(webhooksEnabled):
+        t2 = threading.Thread(target=start_webhooks)
+        t2.start()

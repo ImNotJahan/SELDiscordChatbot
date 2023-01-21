@@ -1,13 +1,22 @@
 import discord
 import requests
 
-async def discordBotListAPI(client, dblToken):
+async def discordBotListAPI(client, authToken):
     clientID = client.user.id
-    authToken = dblToken
     guilds = f"{len(client.guilds)}"
     
     r = requests.post(
         f"https://discordbotlist.com/api/v1/bots/{clientID}/stats",
         headers={"Authorization":f"{authToken}"}, 
         data={"guilds":f"{guilds}"}
+    )
+
+async def discordsAPI(client, authToken):
+    clientID = client.user.id
+    guilds = f"{len(client.guilds)}"
+    
+    r = requests.post(
+        f"https://discords.com/bots/api/bot/{clientID}",
+        headers={"Authorization":f"{authToken}"}, 
+        data={"server_count":f"{guilds}"}
     )
