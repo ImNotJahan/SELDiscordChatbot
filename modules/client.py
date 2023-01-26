@@ -77,7 +77,7 @@ class Client(discord.Client):
 
     async def thank_user(self, user):
         user = await self.fetch_user(user)
-        await user.send("thank you for voting for me :woman_bowing:")
+        await user.send("thank you for voting for me o(\_ \_)o")
 
     @tasks.loop(seconds=10.0)
     async def check_queue(self):
