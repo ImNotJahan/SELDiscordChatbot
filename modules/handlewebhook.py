@@ -15,12 +15,12 @@ class Webhook:
         func = funca
     
     @app.route("/dblupvote", methods=['POST'])
-    def handleDBLUpvote():
+    async def handleDBLUpvote():
         data = json.loads(request.data)
         print("Upvoted by {}, ID {}".format(data["username"], data["id"]))
-
-        func(int(data["id"]))
+        
+        await func(int(data["id"]))
         return "OK"
 
     def run(self):
-        app.run(host='0.0.0.0', port=7800, ssl_context="adhoc")
+        app.run(host='0.0.0.0', port=7800)
