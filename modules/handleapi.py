@@ -20,3 +20,13 @@ async def discordsAPI(client, authToken):
         headers={"Authorization":f"{authToken}"}, 
         data={"server_count":f"{guilds}"}
     )
+
+async def botsggAPI(client, authToken):
+    clientID = client.user.id
+    guilds = f"{len(client.guilds)}"
+    
+    r = requests.post(
+        f"https://discord.bots.gg/api/v1/bots/{clientID}/stats",
+        headers={"Authorization":f"{authToken}"}, 
+        data={"guildCount":f"{guilds}"}
+    )

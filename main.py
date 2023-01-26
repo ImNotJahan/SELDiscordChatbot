@@ -2,13 +2,11 @@ from chatterbot import ChatBot
 from chatterbot.comparisons import LevenshteinDistance
 
 import discord
-from discord.ext import tasks
 
 import configparser
 
 import asyncio
 
-import modules.handleapi as handleapi
 import modules.handlewebhook as handlewebhook
 from modules.client import Client
 
@@ -25,11 +23,13 @@ config.read("config.ini")
 token = config["Tokens"]["discordToken"]
 dblToken = config["Tokens"]["dblToken"] # dbl : Discord bot list
 discordsToken = config["Tokens"]["discordsToken"] # discords.com
+botsggToken = config["Tokens"]["botsggToken"] # discord.bots.gg
 
 webhooksEnabled = parseBool(config["Settings"]["voteWebhooks"])
 
 postStatsToDBL = parseBool(config["Settings"]["postStatsToDBL"])
 postStatsToDiscords = parseBool(config["Settings"]["postStatsToDiscords"])
+postStatsToBotsGG = parseBool(config["Settings"]["postStatsToBotsGG"])
 
 prefix = config["Settings"]["prefix"]
 prefixLength = len(prefix)
@@ -55,21 +55,14 @@ bot = ChatBot("Lain", logic_adapters=
         "chatterbot.preprocessors.clean_whitespace"
     ])
 
-# Bot list server count posting
-@tasks.loop(hours=1)
-async def updateDiscordBotListStatistics():
-    if(postStatsToDBL):
-        await handleapi.discordBotListAPI(client, dblToken)
-    if(postStatsToDiscords):
-        await handleapi.discordsAPI(client, discordsToken)
-
 threadQueue = queue.Queue() # I hate multithreading
 
 # I need to fix the amount of parameters
 client = Client(intents=intents, bot=bot,
                 postStatsToDBL=postStatsToDBL, postStatsToDiscords=postStatsToDiscords,
                 prefix=prefix, prefixLength=prefixLength, discordsToken=discordsToken,
-                dblToken=dblToken, threadQueue=threadQueue)
+                dblToken=dblToken, threadQueue=threadQueue,
+                postStatsToBotsGG=postStatsToBotsGG, botsggToken=botsggToken)
 webhook = handlewebhook.Webhook(threadQueue)
 
 def start_client():

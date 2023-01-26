@@ -34,6 +34,7 @@ def hadBannedWord(text):
 class Client(discord.Client):
     def __init__(self, intents, postStatsToDBL, postStatsToDiscords, bot,
                 prefix, prefixLength, dblToken, discordsToken, threadQueue,
+                postStatsToBotsGG, botsggToken,
                 *args, **kwargs):
         super().__init__(*args, **kwargs)
         
@@ -44,18 +45,18 @@ class Client(discord.Client):
         self.prefixLength = prefixLength
         self.discordsToken = discordsToken
         self.dblToken = dblToken
+        self.botsggToken = botsggToken
+        self.postStatsToBotsGG = postStatsToBotsGG
         self.threadQueue = threadQueue
     
     async def on_ready(self):
         print(f"Logged on as {self.user}")
         print("In " + str(len(self.guilds)) + " servers")
         
-        if(self.postStatsToDBL):
-            await handleapi.discordBotListAPI(self, self.dblToken)
-        if(self.postStatsToDiscords):
-            await handleapi.discordsAPI(self, self.discordsToken)
+        await self.update_statistics()
 
         self.check_queue.start()
+        self.update_statistics.start();
 
     async def on_message(self, message):
         if message.author == self.user: return # No talking to self
@@ -91,3 +92,13 @@ class Client(discord.Client):
             elif(queueResult[:2] == "ID"):
                 await self.thank_user(int(queueResult[2:]))
                 self.threadQueue.put(None)
+
+    # Bot list server count posting
+    @tasks.loop(hours=1)
+    async def update_statistics(self):
+        if(self.postStatsToDBL):
+            await handleapi.discordBotListAPI(self, self.dblToken)
+        if(self.postStatsToDiscords):
+            await handleapi.discordsAPI(self, self.discordsToken)
+        if(self.postStatsToBotsGG):
+            await handleapi.botsggAPI(self, self.botsggToken)
