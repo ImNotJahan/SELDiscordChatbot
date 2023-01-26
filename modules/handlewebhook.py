@@ -1,6 +1,7 @@
 from flask import Flask, request
 import json
 import discord
+import asyncio
 
 app = Flask(__name__)
 
@@ -10,16 +11,15 @@ def default(a):
 func = default
 
 class Webhook:
-    def __init__(self, funca):
-        global func
-        func = funca
+    def __init__(self, paramThreadQueue):
+        global threadQueue
+        threadQueue = paramThreadQueue
     
     @app.route("/dblupvote", methods=['POST'])
-    async def handleDBLUpvote():
+    def handleDBLUpvote():
         data = json.loads(request.data)
-        print("Upvoted by {}, ID {}".format(data["username"], data["id"]))
         
-        await func(int(data["id"]))
+        threadQueue.put("ID" + data["id"])
         return "OK"
 
     def run(self):

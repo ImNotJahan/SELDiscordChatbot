@@ -6,11 +6,13 @@ from discord.ext import tasks
 
 import configparser
 
+import asyncio
+
 import modules.handleapi as handleapi
 import modules.handlewebhook as handlewebhook
 from modules.client import Client
 
-import threading
+import threading, queue
 
 def parseBool(text):
     if(text == "true"):
@@ -61,12 +63,14 @@ async def updateDiscordBotListStatistics():
     if(postStatsToDiscords):
         await handleapi.discordsAPI(client, discordsToken)
 
+threadQueue = queue.Queue() # I hate multithreading
 
+# I need to fix the amount of parameters
 client = Client(intents=intents, bot=bot,
                 postStatsToDBL=postStatsToDBL, postStatsToDiscords=postStatsToDiscords,
                 prefix=prefix, prefixLength=prefixLength, discordsToken=discordsToken,
-                dblToken=dblToken)
-webhook = handlewebhook.Webhook(client.thank_user)
+                dblToken=dblToken, threadQueue=threadQueue)
+webhook = handlewebhook.Webhook(threadQueue)
 
 def start_client():
     client.run(token)

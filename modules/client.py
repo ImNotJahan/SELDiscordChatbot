@@ -7,6 +7,10 @@ from discord.ext import tasks
 import modules.handleapi as handleapi
 import modules.handlewebhook as handlewebhook
 
+import queue
+
+import asyncio
+
 import re # for input sanitization
 
 # Emojis crash ChatBot.get_response function
@@ -29,8 +33,10 @@ def hadBannedWord(text):
 
 class Client(discord.Client):
     def __init__(self, intents, postStatsToDBL, postStatsToDiscords, bot,
-                prefix, prefixLength, dblToken, discordsToken,
+                prefix, prefixLength, dblToken, discordsToken, threadQueue,
                 *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
         self.postStatsToDBL = postStatsToDBL
         self.postStatsToDiscords = postStatsToDiscords
         self.bot = bot
@@ -38,8 +44,7 @@ class Client(discord.Client):
         self.prefixLength = prefixLength
         self.discordsToken = discordsToken
         self.dblToken = dblToken
-
-        super().__init__(*args, **kwargs)
+        self.threadQueue = threadQueue
     
     async def on_ready(self):
         print(f"Logged on as {self.user}")
@@ -49,6 +54,8 @@ class Client(discord.Client):
             await handleapi.discordBotListAPI(self, self.dblToken)
         if(self.postStatsToDiscords):
             await handleapi.discordsAPI(self, self.discordsToken)
+
+        self.check_queue.start()
 
     async def on_message(self, message):
         if message.author == self.user: return # No talking to self
@@ -68,5 +75,17 @@ class Client(discord.Client):
         
         await message.channel.send(bot_response.lower())
 
-    async def thank_user(self, user) -> None:
-        await self.fetch_user(user).send("thank you for supporting me")
+    async def thank_user(self, user):
+        user = await self.fetch_user(user)
+        await user.send("thank you for voting for me :woman_bowing:")
+
+    @tasks.loop(seconds=10.0)
+    async def check_queue(self):
+        try:
+            queueResult = self.threadQueue.get_nowait()
+        except queue.Empty:
+            pass
+        else:
+            if(queueResult[:2] == "ID"):
+                await self.thank_user(int(queueResult[2:]))
+                self.threadQueue.put(None)
