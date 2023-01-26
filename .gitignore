@@ -3,3 +3,9 @@ old-db
 __pycache__
 db.sqlite3
 retrain.bat
+testingconfig.ini
+realconfig.ini
+Scripts
+Lib
+Include
+pyvenv.cfg

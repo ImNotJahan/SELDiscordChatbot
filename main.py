@@ -12,14 +12,25 @@ import modules.handlewebhook as handlewebhook
 
 import threading
 
+def parseBool(text):
+    if(text == "true"):
+        return True
+    return False # False is also default
+
 # Bot token stored in seperate file for .gitignore
 config = configparser.ConfigParser()
 config.read("config.ini")
-token = config["Settings"]["token"]
-dblToken = config["Settings"]["dblToken"] # dbl : Discord bot list
-discordsToken = config["Settings"]["discordsToken"] # discords.com
+token = config["Tokens"]["discordToken"]
+dblToken = config["Tokens"]["dblToken"] # dbl : Discord bot list
+discordsToken = config["Tokens"]["discordsToken"] # discords.com
 
-webhooksEnabled = False
+webhooksEnabled = parseBool(config["Settings"]["voteWebhooks"])
+
+postStatsToDBL = parseBool(config["Settings"]["postStatsToDBL"])
+postStatsToDiscords = parseBool(config["Settings"]["postStatsToDiscords"])
+
+prefix = config["Settings"]["prefix"]
+prefixLength = len(prefix)
 
 # Allows bot to read messages
 intents = discord.Intents.default()
@@ -66,22 +77,25 @@ class Client(discord.Client):
     async def on_ready(self):
         print(f"Logged on as {self.user}")
         print("In " + str(len(self.guilds)) + " servers")
-        await handleapi.discordBotListAPI(self, dblToken);
-        await handleapi.discordsAPI(client, discordsToken)
+
+        if(postStatsToDBL):
+            await handleapi.discordBotListAPI(self, dblToken)
+        if(postStatsToDiscords):
+            await handleapi.discordsAPI(self, discordsToken)
 
     async def on_message(self, message):
         if message.author == client.user: return # No talking to self
         if message.author.bot: return # No talking to bots
-        if ((message.content)[:1] != "]"): return # Only responding to commands
+        if ((message.content)[:prefixLength] != prefix): return # Only responding to commands
 
-        user_input = remove_emojis(message.content[1:])
+        user_input = remove_emojis(message.content[prefixLength:])
         
         # This way sentences with banned words aren't learned
         bot.read_only = hadBannedWord(user_input)
         
         bot_response = bot.get_response(user_input).text
-
-        bot.read_only = False
+        
+        bot.read_only = False # i don't think changing read_only works
         
         print(user_input + " : " + bot_response)
         
@@ -94,8 +108,10 @@ class Client(discord.Client):
 # Bot list server count posting
 @tasks.loop(hours=1)
 async def updateDiscordBotListStatistics():
-    await handleapi.discordBotListAPI(client, dblToken)
-    await handleapi.discordsAPI(client, discordsToken)
+    if(postStatsToDBL):
+        await handleapi.discordBotListAPI(client, dblToken)
+    if(postStatsToDiscords):
+        await handleapi.discordsAPI(client, discordsToken)
 
 
 client = Client(intents = intents)

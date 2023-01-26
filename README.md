@@ -11,8 +11,16 @@ The chatterbot and discord.py libraries are required
 
 You need to create a config.ini file too include your discord bot token in, with the following format:
 ```INI
+[Tokens]
+discordToken = <token>
+dblToken = [token]
+discordsToken = [token]
+
 [Settings]
-token = <token>
+prefix = <prefix>
+postStatsToDBL = <bool>
+postStatsToDiscords = <bool>
+voteWebhooks = <bool>
 ```
 
 Run `train.py` and then run `main.py` and it will start
