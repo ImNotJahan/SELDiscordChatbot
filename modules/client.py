@@ -86,6 +86,8 @@ class Client(discord.Client):
         except queue.Empty:
             pass
         else:
-            if(queueResult[:2] == "ID"):
+            if(queueResult == None):
+                pass
+            elif(queueResult[:2] == "ID"):
                 await self.thank_user(int(queueResult[2:]))
                 self.threadQueue.put(None)
