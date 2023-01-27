@@ -72,7 +72,8 @@ async def test(ctx):
     create_option(name="text", description="what do you want to say?",
     option_type=SlashCommandOptionType.STRING, required=True)])
 async def lain(ctx, text):
-    await ctx.reply(client.generate_response(text))
+    message = await ctx.reply("...")
+    await message.edit(content=client.generate_response(text))
 
 @slash.slash(name="activatechannel",
     description="let me talk in this channel without a prefix", options=[
@@ -103,4 +104,4 @@ if __name__ =="__main__":
 
     if(webhooksEnabled):
         t2 = threading.Thread(target=start_webhooks)
-        t2.start()
+        t2.run()
