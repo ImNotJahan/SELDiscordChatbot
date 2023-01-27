@@ -13,6 +13,8 @@ import asyncio
 
 import re # for input sanitization
 
+noPrefixChannels = []
+
 # Emojis crash ChatBot.get_response function
 def remove_emojis(text):
     emoji_pattern = re.compile("["
@@ -59,28 +61,27 @@ class Client(discord.Client):
         self.update_statistics.start();
 
     async def on_message(self, message):
+        text = message.content
+        
         if message.author == self.user: return # No talking to self
         if message.author.bot: return # No talking to bots
-        if ((message.content)[:self.prefixLength] != self.prefix): return # Only responding to commands
 
-        user_input = remove_emojis(message.content[self.prefixLength:])
+        if(message.channel.id in noPrefixChannels): pass
+        elif ((text)[:self.prefixLength] != self.prefix): return # Only responding to commands
+        else: text = text[self.prefixLength:]
         
-        # This way sentences with banned words aren't learned
-        self.bot.read_only = hadBannedWord(user_input)
+        await message.channel.send(self.generate_response(text))
+
+    def generate_response(self, message):
+        user_input = remove_emojis(message)
         
-        bot_response = self.bot.get_response(user_input).text
-        
-        self.bot.read_only = False # i don't think changing read_only works
-        
-        print(user_input + " : " + bot_response)
-        
-        await message.channel.send(bot_response.lower())
+        return self.bot.get_response(message).text.lower()
 
     async def thank_user(self, user):
         user = await self.fetch_user(user)
         await user.send("thank you for voting for me o(\_ \_)o")
-
-    @tasks.loop(seconds=10.0)
+    
+    @tasks.loop(seconds=5.0)
     async def check_queue(self):
         try:
             queueResult = self.threadQueue.get_nowait()
@@ -89,8 +90,23 @@ class Client(discord.Client):
         else:
             if(queueResult == None):
                 pass
+            
             elif(queueResult[:2] == "ID"):
                 await self.thank_user(int(queueResult[2:]))
+                self.threadQueue.put(None)
+                
+            elif(queueResult[:7] == "CHANNEL"):
+                channel = int(queueResult[7:])
+
+                if(channel not in noPrefixChannels):
+                    noPrefixChannels.append(channel)
+                self.threadQueue.put(None)
+                
+            elif(queueResult[:8] == "RCHANNEL"):
+                channel = int(queueResult[8:])
+                
+                if(channel in noPrefixChannels):
+                    noPrefixChannels.remove(channel)
                 self.threadQueue.put(None)
 
     # Bot list server count posting

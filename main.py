@@ -2,6 +2,9 @@ from chatterbot import ChatBot
 from chatterbot.comparisons import LevenshteinDistance
 
 import discord
+from discord_slash import SlashCommand
+from discord_slash.utils.manage_commands import create_option
+from discord_slash.model import SlashCommandOptionType
 
 import configparser
 
@@ -45,11 +48,6 @@ bot = ChatBot("Lain", logic_adapters=
         "maximum_similarity_threshold": 0.95,
         "response_selection_method": "chatterbot.response_selection.get_random_response"
     }, "modules.adapters.HandleBannedWords",
-    {
-        "import_path": "chatterbot.logic.SpecificResponseAdapter",
-        "input_text": "help",
-        "output_text": "All you need to do is start each of your messages with ] to talk to me"
-    }
     ], preprocessors=
     [
         "chatterbot.preprocessors.clean_whitespace"
@@ -65,6 +63,33 @@ client = Client(intents=intents, bot=bot,
                 postStatsToBotsGG=postStatsToBotsGG, botsggToken=botsggToken)
 webhook = handlewebhook.Webhook(threadQueue)
 
+slash = SlashCommand(client,sync_commands=True)
+@slash.slash(name="help")
+async def test(ctx):
+    await ctx.reply("All you need to do is start each of your messages with ] to talk to me")
+
+@slash.slash(name="lain", description="talk to me", options=[
+    create_option(name="text", description="what do you want to say?",
+    option_type=SlashCommandOptionType.STRING, required=True)])
+async def lain(ctx, text):
+    await ctx.reply(client.generate_response(text))
+
+@slash.slash(name="activatechannel",
+    description="let me talk in this channel without a prefix", options=[
+    create_option(name="text", description="which channel?",
+    option_type=SlashCommandOptionType.CHANNEL, required=True)])
+async def lain(ctx, text):
+    threadQueue.put("CHANNEL" + str(text.id))
+    await ctx.reply("working on it, might take a few seconds")
+
+@slash.slash(name="deactivatechannel",
+    description="stop me from talking in a channel without a prefix", options=[
+    create_option(name="text", description="which channel?",
+    option_type=SlashCommandOptionType.CHANNEL, required=True)])
+async def lain(ctx, text):
+    threadQueue.put("RCHANNEL" + str(text.id))
+    await ctx.reply("working on it, might take a few seconds")
+
 def start_client():
     client.run(token)
 
@@ -74,7 +99,7 @@ def start_webhooks():
 if __name__ =="__main__":
     # creating thread
     t1 = threading.Thread(target=start_client)
-    t1.start()
+    t1.run()
 
     if(webhooksEnabled):
         t2 = threading.Thread(target=start_webhooks)
