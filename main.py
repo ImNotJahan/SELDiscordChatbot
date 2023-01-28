@@ -41,12 +41,14 @@ prefixLength = len(prefix)
 intents = discord.Intents.default()
 intents.messages = True
 
-bot = ChatBot("Lain", logic_adapters=
+from chatterbot import comparisons, response_selection, logic
+
+bot = ChatBot("Lain",
+    logic_adapters=
     [{
         "import_path": "chatterbot.logic.BestMatch",
-        "default_response": "?",
-        "maximum_similarity_threshold": 0.95,
-        "response_selection_method": "chatterbot.response_selection.get_random_response"
+        "response_selection_method": response_selection.get_random_response,
+        "statement_comparison_function": comparisons.LevenshteinDistance
     }, "modules.adapters.HandleBannedWords",
     ], preprocessors=
     [

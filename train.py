@@ -3,9 +3,9 @@ from chatterbot.trainers import ChatterBotCorpusTrainer
 
 bot = ChatBot('Lain')
 
-bot.set_trainer(ChatterBotCorpusTrainer)
+trainer = ChatterBotCorpusTrainer(bot)
     
-bot.train(
+'''bot.train(
     "corpus.conversations",
     "corpus.personal",
     "corpus.greetings",
@@ -16,3 +16,5 @@ bot.train(
     "corpus.religion",
     "corpus.custom"
 )
+'''
+trainer.train("./export.json")

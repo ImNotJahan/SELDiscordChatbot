@@ -6,7 +6,7 @@ bannedWords = open("wordblacklist.txt", "r").read().split(",")
 
 class HandleBannedWords(LogicAdapter):
     def __init__(self, chatbot=None, **kwargs):
-        super().__init__()
+        super().__init__(chatbot)
 
     def can_process(self, statement):
         for word in bannedWords:
