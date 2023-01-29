@@ -36,7 +36,7 @@ def hadBannedWord(text):
 class Client(discord.Client):
     def __init__(self, intents, postStatsToDBL, postStatsToDiscords, bot,
                 prefix, prefixLength, dblToken, discordsToken, threadQueue,
-                postStatsToBotsGG, botsggToken,
+                postStatsToBotsGG, botsggToken, postStatsToTopGG, topggToken
                 *args, **kwargs):
         super().__init__(*args, **kwargs)
         
@@ -50,6 +50,8 @@ class Client(discord.Client):
         self.botsggToken = botsggToken
         self.postStatsToBotsGG = postStatsToBotsGG
         self.threadQueue = threadQueue
+        self.topggToken = topggToken
+        self.postStatsToTopGG = postStatsToTopGG
     
     async def on_ready(self):
         print(f"Logged on as {self.user}")
@@ -118,3 +120,5 @@ class Client(discord.Client):
             await handleapi.discordsAPI(self, self.discordsToken)
         if(self.postStatsToBotsGG):
             await handleapi.botsggAPI(self, self.botsggToken)
+        if(self.postStatsToTopGG):
+            await handleapi.topggAPI(self, self.topggToken)

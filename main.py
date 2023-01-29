@@ -27,12 +27,14 @@ token = config["Tokens"]["discordToken"]
 dblToken = config["Tokens"]["dblToken"] # dbl : Discord bot list
 discordsToken = config["Tokens"]["discordsToken"] # discords.com
 botsggToken = config["Tokens"]["botsggToken"] # discord.bots.gg
+topggToken = config["Tokens"]["topggToken"] # top.gg
 
 webhooksEnabled = parseBool(config["Settings"]["voteWebhooks"])
 
 postStatsToDBL = parseBool(config["Settings"]["postStatsToDBL"])
 postStatsToDiscords = parseBool(config["Settings"]["postStatsToDiscords"])
 postStatsToBotsGG = parseBool(config["Settings"]["postStatsToBotsGG"])
+postStatsToTopGG = parseBool(config["Settings"]["postStatsToTopGG"])
 
 prefix = config["Settings"]["prefix"]
 prefixLength = len(prefix)
@@ -62,7 +64,8 @@ client = Client(intents=intents, bot=bot,
                 postStatsToDBL=postStatsToDBL, postStatsToDiscords=postStatsToDiscords,
                 prefix=prefix, prefixLength=prefixLength, discordsToken=discordsToken,
                 dblToken=dblToken, threadQueue=threadQueue,
-                postStatsToBotsGG=postStatsToBotsGG, botsggToken=botsggToken)
+                postStatsToBotsGG=postStatsToBotsGG, botsggToken=botsggToken,
+                postStatsToTopGG=PostStatsToTopGG, topggToken=topggToken)
 webhook = handlewebhook.Webhook(threadQueue)
 
 slash = SlashCommand(client,sync_commands=True)

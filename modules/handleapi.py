@@ -30,3 +30,13 @@ async def botsggAPI(client, authToken):
         headers={"Authorization":f"{authToken}"}, 
         data={"guildCount":f"{guilds}"}
     )
+
+async def topggAPI(client, authToken):
+    clientID = client.user.id
+    guilds = f"{len(client.guilds)}"
+    
+    r = requests.post(
+        f"https://top.gg/api/bots/{clientID}/stats",
+        headers={"Authorization":f"{authToken}"}, 
+        data={"server_count":f"{guilds}"}
+    )
