@@ -15,11 +15,16 @@ You need to create a config.ini file too include your discord bot token in, with
 discordToken = <token>
 dblToken = [token]
 discordsToken = [token]
+botsggToken = [token]
+topggToken = [token]
 
 [Settings]
 prefix = <prefix>
+databaseURI = <string>
 postStatsToDBL = <bool>
 postStatsToDiscords = <bool>
+postStatsToBotsGG = <bool>
+postStatsToTopGG = <bool>
 voteWebhooks = <bool>
 ```
 
