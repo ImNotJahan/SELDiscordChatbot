@@ -36,7 +36,7 @@ def hadBannedWord(text):
 class Client(discord.Client):
     def __init__(self, intents, postStatsToDBL, postStatsToDiscords, bot,
                 prefix, prefixLength, dblToken, discordsToken, threadQueue,
-                postStatsToBotsGG, botsggToken, postStatsToTopGG, topggToken
+                postStatsToBotsGG, botsggToken, postStatsToTopGG, topggToken,
                 *args, **kwargs):
         super().__init__(*args, **kwargs)
         

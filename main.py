@@ -36,6 +36,7 @@ postStatsToDiscords = parseBool(config["Settings"]["postStatsToDiscords"])
 postStatsToBotsGG = parseBool(config["Settings"]["postStatsToBotsGG"])
 postStatsToTopGG = parseBool(config["Settings"]["postStatsToTopGG"])
 
+databaseURI = config["Settings"]["databaseURI"]
 prefix = config["Settings"]["prefix"]
 prefixLength = len(prefix)
 
@@ -46,11 +47,13 @@ intents.messages = True
 from chatterbot import comparisons, response_selection, logic
 
 bot = ChatBot("Lain",
+    storage_adapter='chatterbot.storage.MongoDatabaseAdapter',
+    database_uri=databaseURI,
     logic_adapters=
     [{
         "import_path": "chatterbot.logic.BestMatch",
         "response_selection_method": response_selection.get_random_response,
-        "statement_comparison_function": comparisons.LevenshteinDistance
+        "statement_comparison_function": "chatterbot.comparisons.levenshtein_distance"
     }, "modules.adapters.HandleBannedWords",
     ], preprocessors=
     [
@@ -65,7 +68,7 @@ client = Client(intents=intents, bot=bot,
                 prefix=prefix, prefixLength=prefixLength, discordsToken=discordsToken,
                 dblToken=dblToken, threadQueue=threadQueue,
                 postStatsToBotsGG=postStatsToBotsGG, botsggToken=botsggToken,
-                postStatsToTopGG=PostStatsToTopGG, topggToken=topggToken)
+                postStatsToTopGG=postStatsToTopGG, topggToken=topggToken)
 webhook = handlewebhook.Webhook(threadQueue)
 
 slash = SlashCommand(client,sync_commands=True)
