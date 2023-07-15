@@ -52,7 +52,6 @@ bot = ChatBot("Lain",
     logic_adapters=
     [{
         "import_path": "chatterbot.logic.BestMatch",
-        "response_selection_method": response_selection.get_random_response,
         "statement_comparison_function": "chatterbot.comparisons.levenshtein_distance"
     }, "modules.adapters.HandleBannedWords",
     ], preprocessors=
@@ -101,6 +100,11 @@ async def lain(ctx, text):
 
 def start_client():
     client.run(token)
+
+@client.event
+async def on_message(message):
+    if client.user.mentioned_in(message):
+        await message.channel.send(client.generate_response(message.content))
 
 def start_webhooks():
     webhook.run()
