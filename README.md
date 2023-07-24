@@ -1,5 +1,5 @@
 # SELDiscordChatbot
-Discord chatbot written in python intended to immitate Lain from SEL.
+Discord chatbot written in python intended to imitate Lain from SEL.
 
 ## Features
 * The more people talk to it, the better its conversing gets
